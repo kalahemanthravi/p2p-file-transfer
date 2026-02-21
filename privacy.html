@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - TransferFriday</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .policy-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            color: var(--accent-color);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        p,
+        li {
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="policy-container glass-card">
+        <h1>Privacy Policy</h1>
+        <p>Last updated: January 2026</p>
+
+        <h2>1. End-to-End Encryption (E2EE)</h2>
+        <p>TransferFriday utilizes state-of-the-art peer-to-peer (P2P) technology with End-to-End Encryption. This
+            means:</p>
+        <ul>
+            <li><strong>Your files are never stored on our servers.</strong> Not even for a millisecond.</li>
+            <li>Data travels directly from your device to the recipient's device.</li>
+            <li>The "Room Secret" (the part of the link after the hyphen) acts as a private key. We do not log this key,
+                making it mathematically impossible for us or any third party to intercept or view your files.</li>
+        </ul>
+
+        <h2>2. Data Collection</h2>
+        <p>We believe in absolute minimalism:</p>
+        <ul>
+            <li><strong>No Personal Data:</strong> We do not ask for your name, email, or phone number.</li>
+            <li><strong>No Tracking:</strong> We do not use persistent cookies for tracking behavior or serving ads.
+            </li>
+            <li><strong>Ephemeral Signaling:</strong> Our signaling server (Supabase) only helps devices find each other
+                using the public Room ID. Once connected, the server drops out of the loop.</li>
+        </ul>
+
+        <h2>3. Local Storage</h2>
+        <p>We may store small preferences (like your theme choice) locally on your device to improve your experience.
+            This data never leaves your browser.</p>
+
+        <br>
+        <a href="index.html" class="primary-btn" style="text-decoration: none; display: inline-block;">Back to Home</a>
+    </div>
+</body>
+
+</html>

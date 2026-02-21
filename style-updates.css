@@ -1,0 +1,85 @@
+/* Additions for Participants List & Footer */
+
+.room-info {
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.room-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.participants-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.participant-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+}
+
+.participant-name {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.kick-btn {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.kick-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+.footer-links {
+    margin-bottom: 12px;
+}
+
+.footer-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: var(--accent-color);
+}
+
+.separator {
+    margin: 0 8px;
+    color: var(--text-secondary);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Red Cancel Button */
+.cancel-btn {
+    color: var(--danger-color);
+    opacity: 0.7;
+}
+
+.cancel-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    opacity: 1;
+}
