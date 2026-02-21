@@ -1,0 +1,16 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    # This tells it to run automatically every Wednesday and Sunday at midnight
+    - cron: '0 0 * * 0,3'
+  workflow_dispatch: # This allows you to click a button to run it manually
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase API
+        run: |
+          curl -X GET "https://tezkynxytwdnpbqsmveq.supabase.co/rest/v1/" \
+          -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlemt5bnh5dHdkbnBicXNtdmVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MDUzMjMsImV4cCI6MjA4MzI4MTMyM30.TC0UYl3kdpHBHmDmEz4x5r8u4_4ahUYved7Af1kA73U"
