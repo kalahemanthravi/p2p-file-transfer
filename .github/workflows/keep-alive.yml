@@ -1,16 +1,21 @@
-name: Keep Supabase Alive
+name: Supabase Keep Alive Ping
 
 on:
   schedule:
-    # This tells it to run automatically at midnight UTC every single day
-    - cron: '0 0 * * *'
-  workflow_dispatch: # This allows you to click a button to run it manually
+    # Runs every 20 minutes
+    - cron: '*/20 * * * *'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
-  ping:
+  ping-supabase:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Supabase API
+      - name: Send Keep-Alive POST Request
         run: |
-          curl -X GET "https://tezkynxytwdnpbqsmveq.supabase.co/rest/v1/" \
-          -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlemt5bnh5dHdkbnBicXNtdmVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MDUzMjMsImV4cCI6MjA4MzI4MTMyM30.TC0UYl3kdpHBHmDmEz4x5r8u4_4ahUYved7Af1kA73U"
+          curl -X POST "https://bstklnsxyvckulpcikpq.supabase.co/rest/v1/keep_alive" \
+          -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzdGtsbnN4eXZja3VscGNpa3BxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3MjcyOTMsImV4cCI6MjA4NzMwMzI5M30.d9wUTZS_rppH6-znfDBOQmv67xuFNPNNO1y2jn-Kr70" \
+          -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzdGtsbnN4eXZja3VscGNpa3BxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3MjcyOTMsImV4cCI6MjA4NzMwMzI5M30.d9wUTZS_rppH6-znfDBOQmv67xuFNPNNO1y2jn-Kr70" \
+          -H "Content-Type: application/json" \
+          -H "Prefer: return=minimal" \
+          -d '{"message": "github_action_ping"}'
