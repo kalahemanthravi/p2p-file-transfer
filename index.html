@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FridayTransfer — Encrypted P2P File Transfer</title>
+  <meta name="description"
+    content="Send files directly between browsers with end-to-end encryption. No uploads, no storage, no sign-up.">
+  <meta name="theme-color" content="#0a0a14">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <canvas id="particles-canvas"></canvas>
+  <div id="toast-container"></div>
+
+  <!-- ═══════════ ACCEPT/DENY MODAL ═══════════ -->
+  <div class="modal-overlay" id="transfer-modal" style="display:none">
+    <div class="modal glass-card">
+      <div class="modal-icon">📨</div>
+      <h3 class="modal-title" id="modal-title">Incoming Transfer</h3>
+      <p class="modal-subtitle" id="modal-subtitle">Someone wants to send you files</p>
+      <div class="modal-file-list" id="modal-file-list"></div>
+      <div class="modal-summary" id="modal-summary"></div>
+      <p class="modal-hint">You'll be asked to select a folder to save files.</p>
+      <div class="modal-actions">
+        <button class="btn btn-primary btn-glow" id="modal-accept-btn">
+          <span class="btn-content">✅ Accept</span>
+          <span class="btn-shimmer"></span>
+        </button>
+        <button class="btn btn-danger" id="modal-deny-btn">
+          <span class="btn-content">❌ Deny</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ PEER LEFT MODAL ═══════════ -->
+  <div class="modal-overlay" id="peer-left-modal" style="display:none">
+    <div class="modal glass-card">
+      <div class="modal-icon">👋</div>
+      <h3 class="modal-title" id="peer-left-title">Peer Left</h3>
+      <p class="modal-subtitle" id="peer-left-message">The other party has left the room.</p>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="peer-left-ok-btn">
+          <span class="btn-content">OK, Leave Room</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ DASHBOARD SCREEN ═══════════ -->
+  <div id="dashboard-screen" class="screen active">
+    <header class="app-header">
+      <div class="header-left">
+        <div class="logo-mark">
+          <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+            <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" stroke="url(#g2)" stroke-width="2.5" fill="none" />
+            <path d="M16 24l6 6 10-12" stroke="url(#g2)" stroke-width="3" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <defs>
+              <linearGradient id="g2" x1="0" y1="0" x2="48" y2="48">
+                <stop stop-color="#818cf8" />
+                <stop offset="1" stop-color="#c084fc" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="header-brand">Friday<span>Transfer</span></span>
+      </div>
+      <div class="header-right">
+        <div class="status-badge online" id="connection-status"><span class="status-dot"></span> Ready</div>
+      </div>
+    </header>
+
+    <main class="dashboard-main">
+      <div class="hero-section">
+        <h1 class="hero-title">Send files <span class="gradient-text">directly</span> to anyone</h1>
+        <p class="hero-subtitle">No uploads. No storage. No sign-up. Just encrypted peer-to-peer transfer.</p>
+      </div>
+
+      <div class="modes-grid">
+        <div class="mode-card glass-card" id="create-room-card">
+          <div class="mode-icon-wrap">
+            <div class="mode-icon">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 5v14M5 12h14" stroke-linecap="round" />
+              </svg>
+            </div>
+          </div>
+          <h3 class="mode-title">Create Room</h3>
+          <p class="mode-desc">Start a new transfer room and invite someone</p>
+          <div class="mode-options">
+            <button class="btn btn-primary btn-glow" id="create-room-btn"><span class="btn-content">� Start
+                Transfer</span><span class="btn-shimmer"></span></button>
+          </div>
+        </div>
+        <div class="mode-card glass-card" id="join-room-card">
+          <div class="mode-icon-wrap">
+            <div class="mode-icon join-icon">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </div>
+          </div>
+          <h3 class="mode-title">Join Room</h3>
+          <p class="mode-desc">Enter a room code to join an existing transfer</p>
+          <div class="join-form">
+            <div class="code-input-group">
+              <input type="text" id="join-code-input" class="glass-input code-input" placeholder="XXXX-XXXX"
+                maxlength="9" autocomplete="off" spellcheck="false">
+              <button class="btn btn-primary" id="join-btn" disabled>Join</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="system-load-bar" id="system-load" style="display:none"></div>
+
+      <div class="features-strip">
+        <div class="feature-chip"><span>🔒</span> E2E Encrypted</div>
+        <div class="feature-chip"><span>⚡</span> Real-time P2P</div>
+        <div class="feature-chip"><span>📁</span> Any File Size</div>
+        <div class="feature-chip"><span>🚫</span> No Server Storage</div>
+        <div class="feature-chip"><span>👤</span> No Login</div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ═══════════ ROOM SCREEN ═══════════ -->
+  <div id="room-screen" class="screen">
+    <header class="app-header room-header">
+      <div class="header-left">
+        <button class="btn btn-ghost btn-sm" id="back-btn" title="Leave Room">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <span class="header-brand">Friday<span>Transfer</span></span>
+      </div>
+      <div class="header-right">
+        <div class="peers-count" id="peers-count">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+          </svg>
+          <span id="peers-count-num">0</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="room-body">
+      <!-- Share Panel -->
+      <aside class="share-panel glass-card" id="share-panel">
+        <h3 class="panel-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="18" cy="5" r="3" />
+            <circle cx="6" cy="12" r="3" />
+            <circle cx="18" cy="19" r="3" />
+            <path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98" />
+          </svg>
+          Share Room
+        </h3>
+
+        <div class="share-section">
+          <label class="share-label">Room Code</label>
+          <div class="code-display" id="room-code-display">
+            <span class="code-text" id="room-code-text">----</span>
+            <button class="copy-btn" data-copy="code" title="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" />
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="share-section">
+          <label class="share-label">Share Link</label>
+          <div class="link-display" id="room-link-display">
+            <span class="link-text" id="room-link-text">...</span>
+            <button class="copy-btn" data-copy="link" title="Copy link">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" />
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="share-section qr-section">
+          <label class="share-label">QR Code</label>
+          <div class="qr-container" id="qr-container"><canvas id="qr-canvas" width="180" height="180"></canvas></div>
+        </div>
+
+        <div class="share-section">
+          <h4 class="panel-subtitle">Connected Peer</h4>
+          <div class="peers-list" id="peers-list">
+            <div class="peer-empty">Waiting for peer to join...</div>
+          </div>
+        </div>
+
+        <button class="btn btn-danger btn-sm" id="leave-room-btn" style="width:100%;margin-top:auto">
+          <span class="btn-content">🚪 Leave Room</span>
+        </button>
+      </aside>
+
+      <!-- Transfer Area -->
+      <section class="transfer-area">
+        <!-- Drop Zone -->
+        <div class="drop-zone" id="drop-zone">
+          <div class="drop-zone-content">
+            <div class="drop-icon">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </div>
+            <h3 class="drop-title">Drop files here or click to browse</h3>
+            <p class="drop-subtitle">Files are encrypted and sent directly — never stored on any server</p>
+            <div class="drop-badges">
+              <span class="mini-badge">🔒 AES-256-GCM</span>
+              <span class="mini-badge">📡 WebRTC P2P</span>
+              <span class="mini-badge">♾️ No Size Limit</span>
+            </div>
+          </div>
+          <input type="file" id="file-input" multiple hidden>
+        </div>
+
+        <!-- Queued Files -->
+        <div class="queued-files-section" id="queued-files-section" style="display:none">
+          <div class="section-header">
+            <h3 class="section-title">📎 Selected Files <span class="file-order-hint">(sorted: small → large)</span>
+            </h3>
+            <div class="section-actions">
+              <button class="btn btn-primary btn-sm" id="send-all-btn" disabled>
+                <span class="btn-content">🚀 Send All</span><span class="btn-shimmer"></span>
+              </button>
+              <button class="btn btn-ghost btn-sm" id="clear-queue-btn">Clear</button>
+            </div>
+          </div>
+          <div class="queued-files-list" id="queued-files-list"></div>
+        </div>
+
+        <!-- Active Transfer Status -->
+        <div class="active-transfer-section" id="active-transfer-section" style="display:none">
+          <div class="section-header">
+            <h3 class="section-title" id="transfer-status-title">📤 Sending...</h3>
+            <button class="btn btn-danger btn-sm kill-btn" id="kill-transfer-btn">
+              <span class="btn-content">⛔ Stop Transfer</span>
+            </button>
+          </div>
+          <div class="active-transfer-card glass-card" id="active-transfer-card">
+            <div class="transfer-file-info">
+              <span class="transfer-file-icon" id="transfer-file-icon">📄</span>
+              <div class="transfer-file-details">
+                <div class="transfer-file-name" id="transfer-file-name">filename.ext</div>
+                <div class="transfer-file-meta" id="transfer-file-meta">0 B / 0 B</div>
+              </div>
+              <div class="transfer-file-counter" id="transfer-file-counter">1 / 1</div>
+            </div>
+            <div class="transfer-progress-wrap">
+              <div class="transfer-progress-bar-wrap">
+                <div class="transfer-progress-bar" id="transfer-progress-bar" style="width:0%"></div>
+              </div>
+              <div class="transfer-progress-stats">
+                <span id="transfer-percent">0%</span>
+                <span id="transfer-speed">Waiting...</span>
+                <span id="transfer-eta">--:--</span>
+              </div>
+            </div>
+            <!-- Overall progress for multi-file -->
+            <div class="overall-progress" id="overall-progress" style="display:none">
+              <div class="overall-label">Overall: <span id="overall-files-done">0</span> / <span
+                  id="overall-files-total">0</span> files</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Waiting for acceptance -->
+        <div class="waiting-section" id="waiting-section" style="display:none">
+          <div class="glass-card waiting-card">
+            <div class="waiting-spinner"></div>
+            <h3>Waiting for receiver to accept...</h3>
+            <p id="waiting-details">Your files are ready. The receiver will be asked to accept.</p>
+            <button class="btn btn-danger btn-sm" id="cancel-waiting-btn">
+              <span class="btn-content">⛔ Cancel</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Completed Files -->
+        <div class="completed-section" id="completed-section" style="display:none">
+          <div class="section-header">
+            <h3 class="section-title">✅ Completed</h3>
+          </div>
+          <div class="completed-list" id="completed-list"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/qr.js"></script>
+  <script src="js/crypto.js"></script>
+  <script src="js/connection.js"></script>
+  <script src="js/transfer.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
