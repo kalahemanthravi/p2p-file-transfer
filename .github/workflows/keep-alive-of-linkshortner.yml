@@ -1,0 +1,21 @@
+name: Supabase Keep Alive Ping
+
+on:
+  schedule:
+    # Runs every 20 minutes
+    - cron: '*/20 * * * *'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  ping-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Keep-Alive POST Request
+        run: |
+          curl -X POST "https://iefqlzrzpfhwmpedgewm.supabase.co/rest/v1/keep_alive" \
+          -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImllZnFsenJ6cGZod21wZWRnZXdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4NjkxNDAsImV4cCI6MjA5MzQ0NTE0MH0.XoM0nQrc0pHN9dlUJ00Pv-tT71VBomTYO8e0ls7I68E" \
+          -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImllZnFsenJ6cGZod21wZWRnZXdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4NjkxNDAsImV4cCI6MjA5MzQ0NTE0MH0.XoM0nQrc0pHN9dlUJ00Pv-tT71VBomTYO8e0ls7I68E" \
+          -H "Content-Type: application/json" \
+          -H "Prefer: return=minimal" \
+          -d '{"message": "github_action_ping"}'
